@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="C:/Users/matelda/workspace/NER/lib/httpcomponents-client-4.4/commons-codec-1.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/matelda/workspace/NER/lib/httpcomponents-client-4.4/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/matelda/workspace/NER/lib/httpcomponents-client-4.4/fluent-hc-4.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/matelda/workspace/NER/lib/httpcomponents-client-4.4/httpclient-4.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/matelda/workspace/NER/lib/httpcomponents-client-4.4/httpclient-cache-4.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/matelda/workspace/NER/lib/httpcomponents-client-4.4/httpclient-win-4.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/matelda/workspace/NER/lib/httpcomponents-client-4.4/httpcore-4.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/matelda/workspace/NER/lib/httpcomponents-client-4.4/httpmime-4.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/matelda/workspace/NER/lib/httpcomponents-client-4.4/jna-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/matelda/workspace/NER/lib/httpcomponents-client-4.4/jna-platform-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/matelda/workspace/NER/lib/weka/weka.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
