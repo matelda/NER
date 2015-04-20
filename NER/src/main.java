@@ -9,7 +9,7 @@ public class main {
 		GazetteersImp gz = new GazetteersImp();
 		
 		
-		String text = "";
+		String text = "لما نكون سوا يا حياتي انا";
 		List<Token> tok ;
 		tok = instance.extract(text);
 		gz.compareWithGazettees(tok);
