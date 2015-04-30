@@ -24,9 +24,9 @@ public interface Token {
 
 	public abstract String getStem();
 
+	public abstract boolean isCapitalLetter();
+	
 	public abstract String getDiacFreeStem();
-
-	public abstract String getGloss();
 
 	public abstract List<String> getTokenized();
 

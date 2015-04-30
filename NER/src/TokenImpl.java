@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class TokenImpl implements Token{
 
-	private String word ; 
+	private String word ;
 	private int offset ;
 	private int length ;
 	private String cas ;
@@ -20,7 +20,7 @@ public class TokenImpl implements Token{
 	private String pos ;
 	private String stem ;
 	private String diacFreeStem ;
-	private String gloss ;
+	private boolean capitalLetter ;
 	List<String> tokenized ;
 	private String normalizedWord;
 	private boolean hasPrefix;
@@ -100,6 +100,10 @@ public class TokenImpl implements Token{
 		this.offset = offset;
 		this.length = length;
 		this.cas = cas;
+		if(stt.equals("c"))
+		{
+			stt = "na";
+		}
 		this.stt = stt;
 		this.num = num;
 		this.gen = gen;
@@ -108,7 +112,12 @@ public class TokenImpl implements Token{
 		else
 			this.pos = pos;
 		this.stem = stem;
-		this.gloss = gloss;
+		
+		if(gloss != null && Character.isUpperCase(gloss.charAt(0)))
+			this.capitalLetter = true;
+		else
+			this.capitalLetter = false;
+		
 		if (stem != null)
 		{
 			this.diacFreeStem = removeDiac(stem);
@@ -263,22 +272,18 @@ public class TokenImpl implements Token{
 		return stem;
 	}
 	
-	
+	@Override
+	public boolean isCapitalLetter() {
+		return capitalLetter;
+	}
+
+
 	/* (non-Javadoc)
 	 * @see Token#getDiacFreeStem()
 	 */
 	@Override
 	public String getDiacFreeStem() {
 		return diacFreeStem;
-	}
-	
-	
-	/* (non-Javadoc)
-	 * @see Token#getGloss()
-	 */
-	@Override
-	public String getGloss() {
-		return gloss;
 	}
 	
 	
@@ -884,7 +889,7 @@ public class TokenImpl implements Token{
 	{
 		System.out.println("word "+word+"/lenght "+length+" /offset "+offset);
 		System.out.println("cas "+cas+" /stt "+stt+" /num "+num+" /gen "+gen+" /pos "+pos+" /stem "
-		+stem+" /gloss "+gloss+" /diacFreeStem "+diacFreeStem);
+		+stem+" /diacFreeStem "+diacFreeStem);
 		String str ;
 		if(countryName)
 			str = "true";
