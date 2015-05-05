@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -12,8 +13,11 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-/** A HTTP Client that reads an input XML file, sends a request to the
-* server and writes the response to an output XML file.
+/**
+ * <h1>MADAMIRA Client</h1> 
+ * This class is a HTTP Client that connects with a local MADAMIRA server
+ * it receives an input string representing an XML file, sends a request to the
+* server and writes the response to an output string representing another XML file.
 **/
 class MADAMIRAClient {
 	private static String url = "http://localhost:";
@@ -22,27 +26,56 @@ class MADAMIRAClient {
 	private int PORT = 8223;
 	private String outputXML = null ;
 	
-	public MADAMIRAClient(String iFile) {
-		this.inFile = iFile;
+	@SuppressWarnings("deprecation")
+	public MADAMIRAClient() {
 		httpclient = new DefaultHttpClient();
 		}
-	/**
-	* @return true if successful execution, else false.
-	*/
 
-	public String run() {
+	/**
+	 * * connects with the server sends the xml string and receives the resulting xml String
+	 * 
+	 * @param iFile xml string of the following format :
+	 * {@code
+	 * <?xml version="1.0" encoding="UTF-8"?>
+	 * 		<madamira_input xmlns="urn:edu.columbia.ccls.madamira.configuration:0.1">
+	 * 			<in_doc id="id">
+	 * 				<in_seg id="0">النص باللغة العربية</in_seg>
+	 * 			</in_doc>
+	 * 		</madamira_input>
+	 * }
+	 * 
+	 * @param iFile
+	 * {@code
+	 * <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	 * 		<madamira_output xmlns="urn:edu.columbia.ccls.madamira.configuration:0.1">
+	 * 			<out_doc id="id">
+	 * 				<out_seg id="0">
+	 * 					 <word_info>
+	 * 						<word id="0" word="الكلمة" length="0" offset="0">
+	 * 							<svm_prediction>
+	 * 								<morph_feature_set pos="noun" gen="f" num="s" stt="d" cas="n"/>
+	 * 							</svm_prediction>
+	 * 							<analysis rank="0" score="1">
+	 * 								<morph_feature_set gloss="word" pos="noun" gen="f" num="s" stt="d" cas="n" stem="كلمة"/>
+	 * 							</analysis>
+	 * 							<tokenized scheme="tok">
+	 * 								<tok id="0" form0="الكلمة"/>
+	 * 							</tokenized>
+	 * 						</word>
+	 * 					</word_info>
+	 * 				</out_seg>
+	 * 			</out_doc>
+	 * 		</madamira_output>
+	 * }
+	 * @return xml string of the following format :
+	 */
+	public String run(String iFile) {
+		this.inFile = iFile;
 		try {
 			HttpPost httppost = new HttpPost(url+Integer.toString(PORT));
 			StringEntity reqEntity = new StringEntity(inFile,"UTF-8");
 			reqEntity.setContentType("application/xml");
 			reqEntity.setChunked(true);
-			// It may be more appropriate to use FileEntity
-			// class in this particular instance but we are using
-			// a more generic InputStreamEntity to demonstrate
-			// the capability to stream out data from any
-			// arbitrary source
-			// FileEntity entity =
-			// new FileEntity(file, "binary/octet-stream");
 			httppost.setEntity(reqEntity);
 			HttpResponse response=null;
 			HttpEntity resEntity=null;
@@ -53,24 +86,18 @@ class MADAMIRAClient {
 				System.out.println(ex.getMessage());
 			return outputXML;
 			}
-			//System.out.println(response.getStatusLine());
+
 			if (resEntity != null) {
 				InputStream responseBody = response.getEntity().getContent();
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(responseBody, "utf8"));
-//				BufferedWriter writer = new BufferedWriter(
-//						new OutputStreamWriter(new FileOutputStream(oFile), "utf8"));
+
 				String line = null;
 				StringBuilder sbr = new StringBuilder();
 				while ((line = reader.readLine()) != null) {
-//					sbr.append(line+"\\n");
 						sbr.append(line);
 				}
 				reader.close();
-//				writer.write(sbr.toString());
-//				writer.flush();
-//				writer.close();
-//				System.out.println(sbr.toString());;
 				outputXML = sbr.toString();
 			}
 			EntityUtils.consume(resEntity);
