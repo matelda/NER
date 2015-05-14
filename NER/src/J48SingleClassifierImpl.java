@@ -1,12 +1,20 @@
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+
 import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
+import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.meta.FilteredClassifier;
 import weka.classifiers.trees.J48;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -36,36 +44,57 @@ public class J48SingleClassifierImpl {
 	
 	public J48SingleClassifierImpl()
 	{
-//		loadModel();
+		loadModel();
 	}
 	public void train(List<Token> tokens)
 	{
 		try
 		{
-			constructARFF(TRAIN,tokens);		
+			constructARFF(TRAIN,tokens);
+//			System.out.print(instances);
 			filter = new StringToWordVector();
 			filter.setAttributeIndices("last");
 			filter.setInputFormat(instances);
 			Instances filteredData  = Filter.useFilter(instances, filter);
 			classifier = new J48();
+			
+			//evaluation
+			Instances evalins = filteredData ; 
+			Evaluation eval = new Evaluation(evalins);
+			eval.crossValidateModel(classifier, evalins, 10, new Random(1));
+			
+			//saving validaion
+			Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("evaluation/"+modelFileName+"_eval")));
+			out.write(eval.toSummaryString());
+			out.write("\r\n");
+			out.write(eval.toClassDetailsString());
+			out.write("\r\n");
+			out.write(eval.toMatrixString());
+			out.write("\r\n");
+            
+			//classification
 			classifier.buildClassifier(filteredData);
-			//saving the model
-			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(modelFileName));
-            out.writeObject(classifier);
+			out.write(classifier.toString());
             out.close();
+            
+			//saving the model
+			ObjectOutputStream outclass = new ObjectOutputStream(new FileOutputStream("models/"+modelFileName));
+			outclass.writeObject(classifier);
+			outclass.close();
 		}
 		catch(IOException x)
 		{
-			
+			x.printStackTrace();
 		}
 		catch(Exception ex)
 		{
-			
+			ex.printStackTrace();
 		}
 	}
 	public void classify(List<Token> tokens)
 	{
 		constructARFF(CALSSIFY,tokens);
+//		System.out.println(instances);
 		double pred;
 		try
 		{
@@ -84,7 +113,7 @@ public class J48SingleClassifierImpl {
 	private void loadModel()
 	{
 		try {
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(modelFileName));
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream("models/"+modelFileName));
             Object tmp = in.readObject();
 			classifier = (J48) tmp;
             in.close();
@@ -95,7 +124,9 @@ public class J48SingleClassifierImpl {
 			System.out.println("Problem found when reading: " + modelFileName);
 		}
 	}
-	public void constructARFF(int task,List<Token> tokens)
+	
+	
+	private void constructARFF(int task,List<Token> tokens)
 	{
 		int numInstances = tokens.size();
 		ArrayList<Attribute> atts = new ArrayList<Attribute>();
@@ -156,6 +187,7 @@ public class J48SingleClassifierImpl {
 		
 		instances = new Instances("Dataset", atts, numInstances);
 		instances.setClassIndex(NUM_OF_ATTRIBUTES-1);
+		
 		vals = new double[NUM_OF_ATTRIBUTES];
 		
 		//add instances
@@ -202,27 +234,18 @@ public class J48SingleClassifierImpl {
 			else
 				vals[17] = classNominalValues.indexOf(tokens.get(i+1).getRulePrediction());
 			
-			if(task == TRAIN)
-				vals[NUM_OF_ATTRIBUTES-1] = classNominalValues.indexOf(tokens.get(i).getNERClass());
-			
 			//creating an instance
 			 Instance inst = new DenseInstance(1.0, vals);
+			 inst.setDataset(instances);
 			 if(task == CALSSIFY)
-				 inst.setMissing(NUM_OF_ATTRIBUTES-1);
+				 inst.setClassMissing();
+			 else if(task == TRAIN)
+				 inst.setClassValue(classNominalValues.indexOf(tokens.get(i).getNERClass()));
+			 
 			 
 			instances.add(inst);
 			
 		}
-	}
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		J48SingleClassifierImpl classifier = new J48SingleClassifierImpl();
-		MADAFeatureExtracion fx = new MADAFeatureExtracion();
-		List<Token> tok ;
-		String st = "محمد";
-		tok = fx.extract(st);
-		classifier.constructARFF(classifier.CALSSIFY, tok);
-		System.out.println(classifier.instances);
 	}
 
 }

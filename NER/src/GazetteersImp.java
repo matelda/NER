@@ -10,13 +10,24 @@ import java.util.List;
 
 public class GazetteersImp implements Gazetteers {
 	
+	private static final Object instance = new Object();
+	
 	private HashSet<?>[] gazetters ;
 	private String[] fileNames;
 	final private int ARRAY_LENGTH = 18 ;
-	public GazetteersImp()
+	protected  GazetteersImp()
 	{
 		loadGazetters();
 	}
+
+	/**
+	 * 
+	 * @return an instance of the singlton object
+	 */
+	public static Object getInstance() {
+		return instance;
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void loadGazetters()
 	{
@@ -29,11 +40,11 @@ public class GazetteersImp implements Gazetteers {
 		fileNames[1] = "locGazetteer_1";
 		fileNames[2] = "locGazetteer_2";
 		fileNames[3] = "locGazetteer_3";
-		fileNames[4] = "ogrGazetteer_1";
-		fileNames[5] = "ogrGazetteer_2";
-		fileNames[6] = "ogrGazetteer_3";
-		fileNames[7] = "ogrGazetteer_4";
-		fileNames[8] = "ogrGazetteer_5";
+		fileNames[4] = "orgGazetteer_1";
+		fileNames[5] = "orgGazetteer_2";
+		fileNames[6] = "orgGazetteer_3";
+		fileNames[7] = "orgGazetteer_4";
+		fileNames[8] = "orgGazetteer_5";
 		fileNames[9] = "honorifics_1";
 		fileNames[10] = "titles_1";
 		fileNames[11] = "nameWithdefiniteArticle_1";
@@ -51,7 +62,7 @@ public class GazetteersImp implements Gazetteers {
         try {
        	for(int i = 0 ; i < fileNames.length ; i++)
        	{
-       		openF = new File("Gazetters/"+fileNames[i]+".txt");
+       			openF = new File("gazetters/"+fileNames[i]+".txt");
     			in = new BufferedReader( new InputStreamReader( new FileInputStream(openF), "UTF8"));
     			str = "";
     			while ((str = in.readLine()) != null) {
